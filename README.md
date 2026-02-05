@@ -46,7 +46,6 @@
 - [Configuration](#-configuration)
 - [Usage Examples](#-usage-examples)
 - [MongoDB Setup](#-mongodb-setup)
-- [Documentation](#-documentation)
 - [Development](#-development)
 - [FAQ](#-faq)
 - [Contributing](#-contributing)
@@ -70,9 +69,7 @@
 |---------|-------------------|------------------|
 | Elasticsearch Sync | ✅ | ✅ |
 | Milvus/Zilliz Sync | ❌ | ✅ |
-| Vector Search Support | ❌ | ✅ |
 | Dual Engine Writes | ❌ | ✅ |
-| AI/ML Ready | ❌ | ✅ |
 
 ---
 
@@ -365,37 +362,18 @@ use admin
 
 // Create dedicated user
 db.createUser({
-  user: "monstache",
-  pwd: "secure_password_here",
+  user: "",
+  pwd: "",
   roles: [
     { role: "readWrite", db: "admin" },
-    { role: "read", db: "local" },  // For oplog access
-    { role: "read", db: "mydb" },   // Your source database
-    { role: "readWrite", db: "monstache" },  // For state storage
-    { role: "clusterMonitor", db: "admin" }  // For change streams
+    { role: "readWrite", db: "<logic db>" },
+    { role: "readWrite", db: "monstache" },
+    { role: "clusterMonitor", db: "admin" }
   ]
 })
 ```
 
-#### Option 2: Per-Database Permissions
 
-```javascript
-// For each database you want to sync
-use mydb
-db.createUser({
-  user: "monstache_mydb",
-  pwd: "secure_password",
-  roles: [
-    { role: "readWrite", db: "mydb" }
-  ]
-})
-
-// Grant additional cluster permissions
-use admin
-db.grantRolesToUser("monstache_mydb", [
-  { role: "clusterMonitor", db: "admin" }
-])
-```
 
 ### Connection String
 
@@ -410,35 +388,6 @@ mongodb://monstache:password@localhost:27017
 mongodb://monstache:password@localhost:27017/admin?authSource=admin
 ```
 
-### Verify Permissions
-
-```bash
-# Test connection
-mongo "mongodb://monstache:password@localhost:27017/admin" --eval "db.runCommand({ping:1})"
-
-# Verify change stream access
-mongo "mongodb://monstache:password@localhost:27017/admin" --eval "db.adminCommand({getParameter: 1, featureCompatibilityVersion: 1})"
-```
-
----
-
-## 📚 Documentation
-
-### Core Documentation
-- 📖 [Configuration Guide](CONFIGURATION.md) - Detailed configuration options
-- 🔒 [Security Policy](SECURITY.md) - Security best practices and reporting
-- 📋 [Open Source Checklist](OPENSOURCE_CHECKLIST.md) - Pre-release checklist
-- 🔧 [Module Changes](MODULE_PATH_CHANGES.md) - Go module path updates
-
-### Architecture & Design
-- 🏗️ [Architecture Diagram](docs/architecture.mermaid) - System architecture
-- 🔌 [Plugin Development](monstachemap/plugin.go) - Custom plugin API
-
-### Docker & Deployment
-- 🐳 [Docker Local](docker/local/README.md) - Local Docker setup
-- 🚀 [Docker Release](docker/release/README.md) - Production Docker images
-- 🔌 [Docker Plugin](docker/plugin/README.md) - Plugin-based Docker setup
-- 🧪 [Docker Test](docker/test/README.md) - Testing with Docker Compose
 
 ---
 
@@ -457,19 +406,6 @@ make build
 GOOS=linux GOARCH=amd64 make build
 ```
 
-### Running Tests
-
-```bash
-# Run all tests
-go test ./...
-
-# Run with coverage
-go test -cover ./...
-
-# Run Docker-based integration tests
-cd docker/test
-./run-tests.sh
-```
 
 ### Project Structure
 
@@ -486,12 +422,7 @@ monstache-milvus/
 └── config.example.toml   # Example configuration
 ```
 
-### Contributing
 
-We welcome contributions! Please see:
-- [Contributing Guidelines](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Open Issues](https://github.com/doing-cr7/monstache-milvus/issues)
 
 **Steps to contribute:**
 1. Fork the repository
@@ -542,40 +473,7 @@ A: Tune batch sizes (`elasticsearch-max-docs`, `zilliz-max-docs`), increase work
 
 **For more issues:** [GitHub Issues](https://github.com/doing-cr7/monstache-milvus/issues)
 
----
 
-## 🔧 Advanced Topics
-
-### Cluster Mode (High Availability)
-
-```toml
-cluster-name = "prod-cluster"
-worker = "worker-1"  # Unique name for this instance
-workers = ["worker-1", "worker-2", "worker-3"]  # All workers
-```
-
-### Custom Plugins
-
-```go
-// myplugin.go
-package main
-
-import "github.com/doing-cr7/monstache-milvus/monstachemap"
-
-func Map(input *monstachemap.MapperPluginInput) (*monstachemap.MapperPluginOutput, error) {
-    // Your transformation logic
-    return &monstachemap.MapperPluginOutput{
-        Document: input.Document,
-        Index: "custom-index",
-    }, nil
-}
-```
-
-Build and use:
-```bash
-go build -buildmode=plugin -o myplugin.so myplugin.go
-./monstache -mapper-plugin-path=./myplugin.so -f config.toml
-```
 
 ### Monitoring & Alerting
 
@@ -630,11 +528,8 @@ direct-read-no-timeout = true  # No cursor timeout
 ## 🙏 Acknowledgments
 
 This project is built upon the excellent work of:
-- **[Ryan Wynn](https://github.com/rwynn)** - Original Monstache creator
 - **[Monstache Project](https://github.com/rwynn/monstache)** - The foundation of this tool
 - **[Milvus Team](https://milvus.io/)** - Amazing vector database
-- **[MongoDB Team](https://www.mongodb.com/)** - Excellent database and drivers
-- **[Olivere](https://github.com/olivere/elastic)** - Elasticsearch Go client
 
 Special thanks to all contributors who help improve this project!
 
@@ -658,9 +553,6 @@ This project uses:
 
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/doing-cr7/monstache-milvus/issues)
 - 💡 **Feature Requests**: [GitHub Issues](https://github.com/doing-cr7/monstache-milvus/issues)
-- 📖 **Documentation**: [GitHub Wiki](https://github.com/doing-cr7/monstache-milvus/wiki)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/doing-cr7/monstache-milvus/discussions)
-
 ---
 
 ## ⭐ Star History
