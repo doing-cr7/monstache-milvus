@@ -1,0 +1,65 @@
+graph TB
+  subgraph entry ["入口与配置"]
+    cli["CLI 二进制 (monstache.go)"]
+    config["配置加载与校验"]
+  end
+
+  subgraph core ["核心流水线"]
+    ic["索引客户端 (indexClient)"]
+    gtm["变更监听与直读 (gtm)"]
+    mapper["映射/过滤/管道 (JS 或 Go 插件)"]
+    relate["关联处理 (relate)"]
+    fileproc["文件内容处理 (GridFS 下载)"]
+    subgraph doidx ["doIndexing 处理序列（先 Zilliz 后 ES）"]
+      diStart["读取 Op / meta 解析 (parseIndexMeta)"]
+      diZillizPrep["Zilliz 数据准备 (cloneMap: 复制 op.Data)"]
+      diZillizStruct["MongoDB map -> ZillizRow (buildZillizFixedRow)"]
+      diZillizRows["struct -> rows (bulk.Add 入队)"]
+      diZillizWrite["Zilliz Upsert rows (worker 批量提交)"]
+      diDrop["移除 ES-only 字段 (dropESOnlyFields)"]
+      diPrepare["ES 数据预处理 (prepareDataForIndexing)"]
+      diESWrite["ES bulk.Add (update/index)"]
+      diEnd["可选: TimeMachine/Meta 保存"]
+    end
+    bulkES["ES 批量处理器 (BulkProcessor)"]
+    bulkZilliz["Zilliz 批量处理器 (MilvusBulkProcessor)"]
+    writeES["ES 写入 (bulk.Add -> bulk flush)"]
+    writeZilliz["Zilliz 写入 (bulk.Add -> Upsert rows)"]
+    saveTs["保存进度 lastTs"]
+    resume["从上次进度恢复"]
+    httpd["内部 HTTP 服务 (/healthz, /stats, /instance)"]
+  end
+
+  subgraph infra ["基础设施"]
+    mongo[("MongoDB")]
+    gridfs[("GridFS")]
+    es[("Elasticsearch")]
+    zilliz[("Zilliz")]
+    aws{"AWS STS/凭证"}
+    systemd{"systemd 通知"}
+  end
+
+  cli --> config
+  config --> ic
+  ic --> gtm
+  gtm --> mapper
+  mapper --> relate
+  relate --> fileproc
+  fileproc --> diStart
+  diStart --> diZillizPrep --> diZillizStruct --> diZillizRows --> diZillizWrite --> diDrop --> diPrepare --> diESWrite --> diEnd
+  diZillizRows --> bulkZilliz
+  diESWrite --> bulkES
+  bulkES --> writeES
+  bulkZilliz --> writeZilliz
+  writeES --> saveTs
+  writeZilliz --> saveTs
+  saveTs --> resume
+  resume --> gtm
+
+  gtm --> mongo
+  fileproc --> gridfs
+  bulkES --> es
+  bulkZilliz --> zilliz
+  ic --> httpd
+  ic --> aws
+  ic --> systemd
