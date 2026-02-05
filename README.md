@@ -92,7 +92,7 @@ graph TB
     style Milvus fill:#00ADD8
 ```
 
-**Detailed architecture diagram:** [architecture.mermaid](docs/architecture.mermaid)
+**Detailed architecture diagram:** [architecture.mermaid](architecture.mermaid)
 
 ### Data Flow
 
