@@ -28,3 +28,19 @@ db.createUser({
     { role: "clusterMonitor", db: "admin" }
   ]
 })
+
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="https://api.star-history.com/svg?repos=doing-cr7/monstache-milvus&type=Date&theme=dark"
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="https://api.star-history.com/svg?repos=doing-cr7/monstache-milvus&type=Date"
+  />
+  <img
+    alt="Star History Chart"
+    src="https://api.star-history.com/svg?repos=doing-cr7/monstache-milvus&type=Date"
+  />
+</picture>
