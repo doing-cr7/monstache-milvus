@@ -1,0 +1,79 @@
+# Monstache Configuration Example
+# Copy this file to config.toml and fill in your values
+# DO NOT commit config.toml with real credentials!
+
+# MongoDB Configuration
+mongo-url = "mongodb://username:password@localhost:27017"
+# mongo-write-url = ""  # Optional: separate write connection
+# mongo-config-url = ""  # Optional: for sharded clusters
+
+# Elasticsearch Configuration
+elasticsearch-urls = ["http://localhost:9200"]
+elasticsearch-user = "elastic_user"
+elasticsearch-password = "your_password_here"
+
+# Zilliz/Milvus Configuration
+zilliz-enabled = true
+zilliz-addr = "https://your-cluster.zillizcloud.com:19530"
+zilliz-api-key = "your_zilliz_api_key_here"
+zilliz-collection-name = "your_collection_name"
+zilliz-max-docs = 256
+zilliz-max-bytes = 2097152
+zilliz-max-seconds = 500
+zilliz-max-conns = 4
+
+# Namespace Configuration
+direct-read-namespaces = ["db.collection"]
+change-stream-namespaces = [""]
+namespace-regex = ''
+
+# Performance Settings
+elasticsearch-max-conns = 4
+dropped-collections = true
+dropped-databases = true
+
+# High Availability (Optional)
+# cluster-name = "monstache_cluster"
+
+# Resume Configuration
+replay = false
+resume = true
+resume-strategy = 1  # 0=timestamp, 1=token
+resume-name = "default"
+direct-read-stateful = true
+index-as-update = false
+
+# HTTP Server
+enable-http-server = true
+http-server-addr = ":8080"
+
+# Error Handling
+fail-fast = false  # Continue on single document errors
+delete-strategy = 2  # 0=stateless, 1=stateful, 2=ignore
+
+# Logging
+verbose = false
+
+# Alert Configuration (Optional - customize for your needs)
+# This example shows Feishu/Lark integration, adapt to your alerting system
+is-feishu = false
+alert-api-url = "https://your-alert-api.example.com/api/alert"
+alert-type = "notice"
+alert-name = "Monstache Sync Alert"
+alert-url = "https://your-dashboard.example.com"
+alert-robot-key = "your_robot_key"
+alert-receive-type = "user_id"
+alert-receive = "user@example.com"
+alert-label-source = "monstache"
+alert-label-env = "production"
+alert-label-feature = "data-sync"
+alert-annotation-desc = "Monstache sync monitoring"
+alert-urgent-enable = false
+alert-urgent-target = ""
+alert-urgent-type = "app"
+alert-urgent-wait-minutes = 0
+
+# Index Mapping Example
+[[mapping]]
+namespace = "mydb.mycollection"
+index = "my_elasticsearch_index"

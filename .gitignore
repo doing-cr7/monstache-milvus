@@ -1,0 +1,56 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+_testmain.go
+
+*.exe
+*.test
+*.prof
+
+# Swap files
+*.swp
+
+dist/
+
+bin/*
+
+# MongoDB Shell
+mongosh-*.tgz
+*.tgz
+docs/
+.idea/
+.DS_Store
+
+# Configuration files with secrets
+config.toml
+*.local.toml
+.env
+.env.local
+.env.*.local
+*.secret.*
+
+# Credentials and keys
+*_credentials.json
+*.pem
+*.key
+*.crt
+
+# Logs
+*.log
+logs/

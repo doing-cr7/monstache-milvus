@@ -1,0 +1,17 @@
+# Test configuration - uses Docker Compose service names
+# Password is set in docker-compose.test.yml environment variables
+mongo-url = "mongodb://root-user:${MONGO_PASSWORD:-testpass123}@mongo-0:27017"
+
+change-stream-namespaces = [""]
+
+elasticsearch-urls = ["http://es7:9200"]
+
+elasticsearch-max-conns = 1
+
+elasticsearch-max-seconds = 1
+
+elasticsearch-max-docs = 1
+
+verbose = true
+
+enable-http-server = true
