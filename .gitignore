@@ -54,3 +54,4 @@ config.toml
 # Logs
 *.log
 logs/
+push.sh
